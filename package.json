@@ -1,0 +1,23 @@
+{
+  "name": "fedwikiriver",
+  "version": "0.1.0",
+  "description": "River of updates across the FedWiki network",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewshell/fedwikiriver.git"
+  },
+  "keywords": [
+    "wiki",
+    "fedwiki"
+  ],
+  "author": "Andrew Shell <andrew@andrewshell.org>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrewshell/fedwikiriver/issues"
+  },
+  "homepage": "https://github.com/andrewshell/fedwikiriver#readme"
+}
