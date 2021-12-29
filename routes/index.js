@@ -99,6 +99,7 @@ router.get('/:domain/rss.xml', async function(req, res, next) {
   const domain = req.params.domain;
   const sitemap = await fedHelper.fetchSitemap(domain);
   const homepage = await fedHelper.homepageUrl(domain);
+  const filterDate = new Date(Date.now() - (7 * 24 * 60 * 60 * 1000)); // One Week
 
   let cache = await pageCache.read(`/${domain}/rss.xml`);
   let allfeeds = await fedHelper.fetchAllFeeds();
@@ -130,6 +131,8 @@ router.get('/:domain/rss.xml', async function(req, res, next) {
           value: `${homepage}/${page.slug}.html#${page.date}`
         }
       };
+    }).filter((item) => {
+      return item.when > filterDate;
     }).sort((a, b) => b.when - a.when);
 
     cache = await pageCache.write(`/${domain}/rss.xml`, rss.buildRssFeed(headElements, historyArray));
