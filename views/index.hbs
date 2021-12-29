@@ -1,0 +1,33 @@
+<h1>{{title}}</h1>
+<p>Federated Wiki Feeds is a utility to generate <a href="https://cyber.harvard.edu/rss/rss.html">RSS 2.0 feeds</a> and <a href="http://opml.org/spec2.opml#subscriptionLists">OPML subscription lists</a> from <a href="https://github.com/fedwiki/wiki">Federated Wikis</a>.</p>
+
+<h2>RSS 2.0 Feeds</h2>
+<p>To generate an RSS 2.0 feed from a Federated Wiki simply navigate to <code>{{docroot}}/{wikidomain}/rss.xml</code>.</p>
+
+<h3>Example Feeds</h3>
+<ul>
+    <li><a href="{{docroot}}/andrew.dojo.fed.wiki/rss.xml">{{docroot}}/andrew.dojo.fed.wiki/rss.xml</a></li>
+    <li><a href="{{docroot}}/ward.asia.wiki.org/rss.xml">{{docroot}}/ward.asia.wiki.org/rss.xml</a></li>
+    <li><a href="{{docroot}}/wellspring.fed.wiki/rss.xml">{{docroot}}/wellspring.fed.wiki/rss.xml</a></li>
+</ul>
+
+<h2>OPML Subscription Lists</h2>
+<p>Most RSS readers support importing OPML subscription lists and some (like <a href="https://github.com/scripting/river4">River 4</a>) support subscribing to an OPML subscription list.</p>
+<p>You can generate an OPML subscription list of a wiki's peers by navigating to <code>{{docroot}}/{wikidomain}/peers.opml</code>.</p>
+
+<h3>Example Subscription Lists</h3>
+<ul>
+    <li><a href="{{docroot}}/andrew.dojo.fed.wiki/peers.opml">{{docroot}}/andrew.dojo.fed.wiki/peers.opml</a></li>
+    <li><a href="{{docroot}}/ward.asia.wiki.org/peers.opml">{{docroot}}/ward.asia.wiki.org/peers.opml</a></li>
+    <li><a href="{{docroot}}/wellspring.fed.wiki/peers.opml">{{docroot}}/wellspring.fed.wiki/peers.opml</a></li>
+</ul>
+
+<h3>All Feeds Subscription List</h3>
+<p>I also generate a subscription list that includes every Federated Wiki this app has seen.</p>
+<ul>
+    <li><a href="{{docroot}}/allfeeds.opml">{{docroot}}/allfeeds.opml</a></li>
+</ul>
+
+<h2>Source Code and Issues</h2>
+<p>The code for this project is hosted on GitHub at <a href="https://github.com/andrewshell/fedwikifeeds">https://github.com/andrewshell/fedwikifeeds</a>.</p>
+<p>If you run across any problems, please <a href="https://github.com/andrewshell/fedwikifeeds/issues">Submit an Issue</a>.</p>

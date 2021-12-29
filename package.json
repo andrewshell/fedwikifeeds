@@ -1,14 +1,14 @@
 {
-  "name": "fedwikiriver",
+  "name": "fedwikifeeds",
   "version": "0.1.0",
-  "description": "River of updates across the FedWiki network",
+  "description": "RSS 2.0 feeds and OPML subscription lists for the FedWiki network",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon ./bin/www --ignore 'data/*'"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andrewshell/fedwikiriver.git"
+    "url": "git+https://github.com/andrewshell/fedwikifeeds.git"
   },
   "keywords": [
     "wiki",
@@ -17,7 +17,20 @@
   "author": "Andrew Shell <andrew@andrewshell.org>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andrewshell/fedwikiriver/issues"
+    "url": "https://github.com/andrewshell/fedwikifeeds/issues"
   },
-  "homepage": "https://github.com/andrewshell/fedwikiriver#readme"
+  "homepage": "https://github.com/andrewshell/fedwikifeeds#readme",
+  "dependencies": {
+    "daverss": "^0.5.30",
+    "dotenv": "^10.0.0",
+    "etag": "^1.8.1",
+    "express": "~4.16.1",
+    "hbs": "~4.0.4",
+    "http-errors": "~1.6.3",
+    "node-fetch": "^2.6.6",
+    "opml": "^0.4.11"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
 }
