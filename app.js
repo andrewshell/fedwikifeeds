@@ -41,28 +41,43 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-let lastHour = 0, allDomains = [];
+function arrayChunks(items, num) {
+  const itemsCopy = [...items];
+  const chunks = [];
+  const itemsPerChunk = Math.ceil(itemsCopy.length / num);
+  while (0 < itemsCopy.length) {
+    chunks.push(itemsCopy.splice(0, itemsPerChunk));
+  }
+  return chunks;
+}
+
+let lastDay = 0, peerDomains = [], inactiveFeedChunks = [];
 
 everyMinute(async (expectedCycleTime) => {
-  let allFeeds;
+  let domain, homepage, feed;
 
   console.log('everyMinute: ' + new Date(expectedCycleTime));
 
-  if (0 === allDomains.length) {
-    allDomains = (await fedwikiHelper.fetchSearchRoster()).data;
+  // Daily
+  if (expectedCycleTime > lastDay + 86400000) {
+    await fedwikiHelper.mergeSearchRoster();
   }
 
-  for (const domain of allDomains.splice(0, 5)) {
-    await feedHelper.fetchPeersOpml(domain);
+  if (0 === peerDomains.length) {
+    peerDomains = await fedwikiHelper.fetchAllPeerDomains();
   }
 
-  if (expectedCycleTime > lastHour + 3600000) {
-    lastHour = expectedCycleTime;
-    allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data);
-  } else {
-    allFeeds = allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data)
-      .filter(filter => { return filter.active || false; });
+  domain = peerDomains.shift();
+  await feedHelper.fetchPeersOpml(domain);
+
+  if (0 === inactiveFeedChunks.length) {
+    inactiveFeedChunks = arrayChunks(Object.values((await fedwikiHelper.fetchAllFeeds()).data)
+      .filter(filter => { return false === filter.active; }), 60);
   }
+
+  allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data)
+    .filter(filter => filter.active || false)
+    .concat(inactiveFeedChunks.shift());
 
   for (const feed of allFeeds) {
     await feedHelper.fetchSiteRss(feed.text);
