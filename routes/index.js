@@ -32,6 +32,11 @@ router.get('/allfeeds.opml', async function (req, res, next) {
   sendCachedOutput(req, res, cache, 'text/xml');
 });
 
+router.get('/activefeeds.opml', async function (req, res, next) {
+  let cache = await feedHelper.fetchActiveFeeds();
+  sendCachedOutput(req, res, cache, 'text/xml');
+});
+
 router.get('/:domain/peers.opml', async function (req, res, next) {
   let cache = await feedHelper.fetchPeersOpml(req.params.domain, true);
   sendCachedOutput(req, res, cache, 'text/xml');
