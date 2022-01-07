@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const config = require('../config');
+const fedwikiHelper = require('../lib/fedwiki-helper');
 const feedHelper = require('../lib/feed-helper');
 
 router.get('/', function(req, res, next) {
@@ -30,6 +31,27 @@ function sendCachedOutput(req, res, cache, contentType) {
 router.get('/allfeeds.opml', async function (req, res, next) {
   let cache = await feedHelper.fetchAllFeeds();
   sendCachedOutput(req, res, cache, 'text/xml');
+});
+
+router.get('/river.json', async function (req, res, next) {
+  const allfeeds = await fedwikiHelper.fetchAllFeeds();
+  const domains = Object.values(allfeeds.data)
+      .filter(filter => true === filter.active )
+      .map(feed => feed.text);
+  const cache = await feedHelper.fetchRiver('Federated Wiki River', domains);
+  sendCachedOutput(req, res, cache, 'application/json');
+});
+
+router.get('/river.js', async function (req, res, next) {
+  const callback = req.query.callback || 'onGetRiverStream';
+  const allfeeds = await fedwikiHelper.fetchAllFeeds();
+  const domains = Object.values(allfeeds.data)
+      .filter(filter => true === filter.active )
+      .map(feed => feed.text);
+  const cache = await feedHelper.fetchRiver('Federated Wiki River', domains);
+  const json = JSON.stringify(cache.data, null, 2);
+  cache.data = `${callback}(${json});`;
+  sendCachedOutput(req, res, cache, 'application/javascript');
 });
 
 router.get('/activefeeds.opml', async function (req, res, next) {
