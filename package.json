@@ -22,6 +22,7 @@
   "homepage": "https://github.com/andrewshell/fedwikifeeds#readme",
   "dependencies": {
     "daverss": "^0.5.30",
+    "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "etag": "^1.8.1",
     "express": "~4.16.1",
