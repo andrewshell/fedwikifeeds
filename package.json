@@ -4,7 +4,8 @@
   "description": "RSS 2.0 feeds and OPML subscription lists for the FedWiki network",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./bin/www --ignore 'data/*'"
+    "start": "nodemon ./bin/www --ignore 'data/*'",
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -32,6 +33,8 @@
     "opml": "^0.4.11"
   },
   "devDependencies": {
+    "expect.js": "*",
+    "mocha": "^6.1.4",
     "nodemon": "^2.0.15"
   }
 }
