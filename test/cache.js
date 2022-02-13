@@ -15,10 +15,10 @@ describe('cache', function() {
     expect(cache).to.be.a('function');
   });
 
-  describe('when status=onlyFresh', function () {
+  describe('when status=onlyFresh', async function () {
 
-    it('should return a Hit with the live value', function () {
-      const c = cache('_internal/nocache', cache.status.onlyFresh, () => {
+    it('should return a Hit with the live value', async function () {
+      const c = await cache('_internal/nocache', cache.status.onlyFresh, async () => {
         return 'live';
       });
 
@@ -33,8 +33,8 @@ describe('cache', function() {
       expect(c).to.have.property('etag');
     });
 
-    it('should return a Miss on error', function () {
-      const c = cache('_internal/nocache', cache.status.onlyFresh, () => {
+    it('should return a Miss on error', async function () {
+      const c = await cache('_internal/nocache', cache.status.onlyFresh, async () => {
         throw Error('cache error');
       });
 
@@ -46,8 +46,8 @@ describe('cache', function() {
       expect(c.error).to.have.property('message', 'cache error');
     });
 
-    it('should update cache with successful live value', function () {
-      const c = cache('_internal/true', cache.status.onlyFresh, () => {
+    it('should update cache with successful live value', async function () {
+      const c = await cache('_internal/true', cache.status.onlyFresh, async () => {
         return 'live';
       });
 
@@ -71,8 +71,8 @@ describe('cache', function() {
 
   describe('when status=cacheOnFail', function () {
 
-    it('should return a Miss on error with no cache', function () {
-      const c = cache('_internal/nocache', cache.status.cacheOnFail, () => {
+    it('should return a Miss on error with no cache', async function () {
+      const c = await cache('_internal/nocache', cache.status.cacheOnFail, async () => {
         throw Error('cache error');
       });
 
@@ -84,12 +84,12 @@ describe('cache', function() {
       expect(c.error).to.have.property('message', 'cache error');
     });
 
-    it('should return a Hit on error with cache', function () {
+    it('should return a Hit on error with cache', async function () {
       cache.store.data['_internal/true'] = cacheStoreCommon.Data.fromHit(
         new cacheStoreCommon.Hit('_internal/true', 'cached')
       ).stringify();
 
-      const c = cache('_internal/true', cache.status.cacheOnFail, () => {
+      const c = await cache('_internal/true', cache.status.cacheOnFail, async () => {
         throw Error('cache error');
       });
 
@@ -106,12 +106,12 @@ describe('cache', function() {
       expect(c).to.have.property('etag');
     });
 
-    it('should return a Hit with the live value with cache', function () {
+    it('should return a Hit with the live value with cache', async function () {
       cache.store.data['_internal/true'] = cacheStoreCommon.Data.fromHit(
         new cacheStoreCommon.Hit('_internal/true', 'cached')
       ).stringify();
 
-      const c = cache('_internal/true', cache.status.cacheOnFail, () => {
+      const c = await cache('_internal/true', cache.status.cacheOnFail, async () => {
         return 'live';
       });
 
@@ -126,12 +126,12 @@ describe('cache', function() {
       expect(c).to.have.property('etag');
     });
 
-    it('should update cache with successful live value', function () {
+    it('should update cache with successful live value', async function () {
       cache.store.data['_internal/true'] = cacheStoreCommon.Data.fromHit(
         new cacheStoreCommon.Hit('_internal/true', 'cached')
       ).stringify();
 
-      const c = cache('_internal/true', cache.status.cacheOnFail, () => {
+      const c = await cache('_internal/true', cache.status.cacheOnFail, async () => {
         return 'live';
       });
 
@@ -155,8 +155,8 @@ describe('cache', function() {
 
   describe('when status=preferCache', function () {
 
-    it('should return a Miss on error with no cache', function () {
-      const c = cache('_internal/nocache', cache.status.preferCache, () => {
+    it('should return a Miss on error with no cache', async function () {
+      const c = await cache('_internal/nocache', cache.status.preferCache, async () => {
         throw Error('cache error');
       });
 
@@ -168,12 +168,12 @@ describe('cache', function() {
       expect(c.error).to.have.property('message', 'cache error');
     });
 
-    it('should return a Hit with the cached value with cache', function () {
+    it('should return a Hit with the cached value with cache', async function () {
       cache.store.data['_internal/true'] = cacheStoreCommon.Data.fromHit(
         new cacheStoreCommon.Hit('_internal/true', 'cached')
       ).stringify();
 
-      const c = cache('_internal/true', cache.status.preferCache, () => {
+      const c = await cache('_internal/true', cache.status.preferCache, async () => {
         return 'live';
       });
 
@@ -188,8 +188,8 @@ describe('cache', function() {
       expect(c).to.have.property('etag');
     });
 
-    it('should return a Hit with the live value with no cache', function () {
-      const c = cache('_internal/true', cache.status.preferCache, () => {
+    it('should return a Hit with the live value with no cache', async function () {
+      const c = await cache('_internal/true', cache.status.preferCache, async () => {
         return 'live';
       });
 
@@ -207,8 +207,8 @@ describe('cache', function() {
   });
 
   describe('when status=onlyCache', function () {
-    it('should return a Miss on error with no cache', function () {
-      const c = cache('_internal/nocache', cache.status.onlyCache, () => {
+    it('should return a Miss on error with no cache', async function () {
+      const c = await cache('_internal/nocache', cache.status.onlyCache, async () => {
         throw Error('cache error');
       });
 
@@ -220,12 +220,12 @@ describe('cache', function() {
       expect(c.error).to.have.property('message', 'Missing cache');
     });
 
-    it('should return a Hit with the cached value with cache', function () {
+    it('should return a Hit with the cached value with cache', async function () {
       cache.store.data['_internal/true'] = cacheStoreCommon.Data.fromHit(
         new cacheStoreCommon.Hit('_internal/true', 'cached')
       ).stringify();
 
-      const c = cache('_internal/true', cache.status.onlyCache, () => {
+      const c = await cache('_internal/true', cache.status.onlyCache, async () => {
         return 'live';
       });
 
@@ -240,8 +240,8 @@ describe('cache', function() {
       expect(c).to.have.property('etag');
     });
 
-    it('should return a Miss with no cache', function () {
-      const c = cache('_internal/nocache', cache.status.onlyCache, () => {
+    it('should return a Miss with no cache', async function () {
+      const c = await cache('_internal/nocache', cache.status.onlyCache, async () => {
         return 'live';
       });
 
