@@ -18,7 +18,7 @@ describe('cache', function() {
   describe('when status=onlyFresh', async function () {
 
     it('should return a Hit with the live value', async function () {
-      const c = await cache('_internal', 'nocache', cache.status.onlyFresh, async () => {
+      const c = await cache('-internal', 'nocache', cache.status.onlyFresh, async () => {
         return 'live';
       });
 
@@ -34,7 +34,7 @@ describe('cache', function() {
     });
 
     it('should return a Miss on error', async function () {
-      const c = await cache('_internal', 'nocache', cache.status.onlyFresh, async () => {
+      const c = await cache('-internal', 'nocache', cache.status.onlyFresh, async () => {
         throw Error('cache error');
       });
 
@@ -47,7 +47,7 @@ describe('cache', function() {
     });
 
     it('should update cache with successful live value', async function () {
-      const c = await cache('_internal', 'true', cache.status.onlyFresh, async () => {
+      const c = await cache('-internal', 'true', cache.status.onlyFresh, async () => {
         return 'live';
       });
 
@@ -74,7 +74,7 @@ describe('cache', function() {
   describe('when status=cacheOnFail', function () {
 
     it('should return a Miss on error with no cache', async function () {
-      const c = await cache('_internal', 'nocache', cache.status.cacheOnFail, async () => {
+      const c = await cache('-internal', 'nocache', cache.status.cacheOnFail, async () => {
         throw Error('cache error');
       });
 
@@ -91,7 +91,7 @@ describe('cache', function() {
         new cacheStoreCommon.Hit('-internal/true', 'cached')
       ).stringify();
 
-      const c = await cache('_internal', 'true', cache.status.cacheOnFail, async () => {
+      const c = await cache('-internal', 'true', cache.status.cacheOnFail, async () => {
         throw Error('cache error');
       });
 
@@ -113,7 +113,7 @@ describe('cache', function() {
         new cacheStoreCommon.Hit('-internal/true', 'cached')
       ).stringify();
 
-      const c = await cache('_internal', 'true', cache.status.cacheOnFail, async () => {
+      const c = await cache('-internal', 'true', cache.status.cacheOnFail, async () => {
         return 'live';
       });
 
@@ -133,7 +133,7 @@ describe('cache', function() {
         new cacheStoreCommon.Hit('-internal/true', 'cached')
       ).stringify();
 
-      const c = await cache('_internal', 'true', cache.status.cacheOnFail, async () => {
+      const c = await cache('-internal', 'true', cache.status.cacheOnFail, async () => {
         return 'live';
       });
 
@@ -160,7 +160,7 @@ describe('cache', function() {
   describe('when status=preferCache', function () {
 
     it('should return a Miss on error with no cache', async function () {
-      const c = await cache('_internal', 'nocache', cache.status.preferCache, async () => {
+      const c = await cache('-internal', 'nocache', cache.status.preferCache, async () => {
         throw Error('cache error');
       });
 
@@ -177,7 +177,7 @@ describe('cache', function() {
         new cacheStoreCommon.Hit('-internal/true', 'cached')
       ).stringify();
 
-      const c = await cache('_internal', 'true', cache.status.preferCache, async () => {
+      const c = await cache('-internal', 'true', cache.status.preferCache, async () => {
         return 'live';
       });
 
@@ -193,7 +193,7 @@ describe('cache', function() {
     });
 
     it('should return a Hit with the live value with no cache', async function () {
-      const c = await cache('_internal', 'true', cache.status.preferCache, async () => {
+      const c = await cache('-internal', 'true', cache.status.preferCache, async () => {
         return 'live';
       });
 
@@ -212,7 +212,7 @@ describe('cache', function() {
 
   describe('when status=onlyCache', function () {
     it('should return a Miss on error with no cache', async function () {
-      const c = await cache('_internal', 'nocache', cache.status.onlyCache, async () => {
+      const c = await cache('-internal', 'nocache', cache.status.onlyCache, async () => {
         throw Error('cache error');
       });
 
@@ -229,7 +229,7 @@ describe('cache', function() {
         new cacheStoreCommon.Hit('-internal/true', 'cached')
       ).stringify();
 
-      const c = await cache('_internal', 'true', cache.status.onlyCache, async () => {
+      const c = await cache('-internal', 'true', cache.status.onlyCache, async () => {
         return 'live';
       });
 
@@ -245,7 +245,7 @@ describe('cache', function() {
     });
 
     it('should return a Miss with no cache', async function () {
-      const c = await cache('_internal', 'nocache', cache.status.onlyCache, async () => {
+      const c = await cache('-internal', 'nocache', cache.status.onlyCache, async () => {
         return 'live';
       });
 
