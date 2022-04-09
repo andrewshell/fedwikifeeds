@@ -1,14 +1,26 @@
 const expect = require('expect.js');
+const fs = require('fs');
+const path = require('path');
+const datadir = path.resolve(__dirname, './cache-filesystem');
 
 const cacheStoreCommon = require('../lib/cache-store-common');
 const Cache = require('../lib/cache');
-const cache = new Cache(require('../lib/cache-store-memory')());
+const cache = new Cache(require('../lib/cache-store-filesystem')({ datadir }));
 
-describe('cache', function() {
+describe('cache-filesystem', function() {
 
   beforeEach(function() {
     // runs before each test in this block
-    cache.store.data = {};
+    if (fs.existsSync(datadir)) {
+      fs.rmSync(datadir, { recursive: true, force: true });
+    }
+  });
+
+  after(function() {
+    // runs once after the last test in this block
+    if (fs.existsSync(datadir)) {
+      fs.rmSync(datadir, { recursive: true, force: true });
+    }
   });
 
   it('should export as a function', function() {
@@ -61,12 +73,7 @@ describe('cache', function() {
       expect(c).to.have.property('error', null);
       expect(c).to.have.property('etag');
 
-      expect(cache.store.data).to.have.property('-internal/true');
-
-      const d = cacheStoreCommon.Data.parse(cache.store.data['-internal/true']);
-      expect(d).to.be.a(cacheStoreCommon.Data);
-      expect(d).to.have.property('data', 'live');
-      expect(d).to.have.property('etag', c.etag);
+      expect(await cache.store.isset('-internal/true')).to.be(true);
     });
 
   });
@@ -87,9 +94,7 @@ describe('cache', function() {
     });
 
     it('should return a Hit on error with cache', async function () {
-      cache.store.data['-internal/true'] = cacheStoreCommon.Data.fromHit(
-        new cacheStoreCommon.Hit('-internal/true', 'cached')
-      ).stringify();
+      await cache.store.set(new cacheStoreCommon.Hit('-internal/true', 'cached'));
 
       const c = await cache.decorate('-internal', 'true', cache.status.cacheOnFail, async () => {
         throw Error('cache error');
@@ -109,9 +114,7 @@ describe('cache', function() {
     });
 
     it('should return a Hit with the live value with cache', async function () {
-      cache.store.data['-internal/true'] = cacheStoreCommon.Data.fromHit(
-        new cacheStoreCommon.Hit('-internal/true', 'cached')
-      ).stringify();
+      await cache.store.set(new cacheStoreCommon.Hit('-internal/true', 'cached'));
 
       const c = await cache.decorate('-internal', 'true', cache.status.cacheOnFail, async () => {
         return 'live';
@@ -129,9 +132,7 @@ describe('cache', function() {
     });
 
     it('should update cache with successful live value', async function () {
-      cache.store.data['-internal/true'] = cacheStoreCommon.Data.fromHit(
-        new cacheStoreCommon.Hit('-internal/true', 'cached')
-      ).stringify();
+      await cache.store.set(new cacheStoreCommon.Hit('-internal/true', 'cached'));
 
       const c = await cache.decorate('-internal', 'true', cache.status.cacheOnFail, async () => {
         return 'live';
@@ -146,13 +147,6 @@ describe('cache', function() {
       expect(c).to.have.property('data', 'live');
       expect(c).to.have.property('error', null);
       expect(c).to.have.property('etag');
-
-      expect(cache.store.data).to.have.property('-internal/true');
-
-      const d = cacheStoreCommon.Data.parse(cache.store.data['-internal/true']);
-      expect(d).to.be.a(cacheStoreCommon.Data);
-      expect(d).to.have.property('data', 'live');
-      expect(d).to.have.property('etag', c.etag);
     });
 
   });
@@ -173,9 +167,7 @@ describe('cache', function() {
     });
 
     it('should return a Hit with the cached value with cache', async function () {
-      cache.store.data['-internal/true'] = cacheStoreCommon.Data.fromHit(
-        new cacheStoreCommon.Hit('-internal/true', 'cached')
-      ).stringify();
+      await cache.store.set(new cacheStoreCommon.Hit('-internal/true', 'cached'));
 
       const c = await cache.decorate('-internal', 'true', cache.status.preferCache, async () => {
         return 'live';
@@ -225,9 +217,7 @@ describe('cache', function() {
     });
 
     it('should return a Hit with the cached value with cache', async function () {
-      cache.store.data['-internal/true'] = cacheStoreCommon.Data.fromHit(
-        new cacheStoreCommon.Hit('-internal/true', 'cached')
-      ).stringify();
+      await cache.store.set(new cacheStoreCommon.Hit('-internal/true', 'cached'));
 
       const c = await cache.decorate('-internal', 'true', cache.status.onlyCache, async () => {
         return 'live';

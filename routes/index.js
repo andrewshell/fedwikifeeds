@@ -1,3 +1,4 @@
+const cache = require('../lib/cache');
 const express = require('express');
 const router = express.Router();
 const config = require('../config');
@@ -15,13 +16,14 @@ function sendCachedOutput(req, res, cache, contentType) {
   const ifNoneMatch = req.get('if-none-match');
   const ifModifiedSince = req.get('if-modified-since');
 
-  if (false === cache) {
+  if (cache.isMiss) {
     res.status(404).send('404 Not Found');
   } else if (ifNoneMatch && cache.etag === ifNoneMatch) {
     res.status(304).send();
   } else if (ifModifiedSince && cache.created <= (new Date(ifModifiedSince))) {
     res.status(304).send();
   } else {
+    console.log(`etag: ${cache.etag}`);
     res.header("Content-Type", contentType);
     res.header("ETag", cache.etag);
     res.status(200).send(cache.data);
@@ -29,8 +31,8 @@ function sendCachedOutput(req, res, cache, contentType) {
 }
 
 router.get('/allfeeds.opml', async function (req, res, next) {
-  let cache = await feedHelper.fetchAllFeeds();
-  sendCachedOutput(req, res, cache, 'text/xml');
+  const output = await feedHelper.fetchAllFeeds();
+  sendCachedOutput(req, res, output, 'text/xml');
 });
 
 router.get('/river.json', async function (req, res, next) {
@@ -38,8 +40,8 @@ router.get('/river.json', async function (req, res, next) {
   const domains = Object.values(allfeeds.data)
       .filter(filter => true === filter.active )
       .map(feed => feed.text);
-  const cache = await feedHelper.fetchRiver('Federated Wiki River', domains);
-  sendCachedOutput(req, res, cache, 'application/json');
+  const output = await feedHelper.fetchRiver('Federated Wiki River', domains);
+  sendCachedOutput(req, res, output, 'application/json');
 });
 
 router.get('/river.js', async function (req, res, next) {
@@ -48,25 +50,27 @@ router.get('/river.js', async function (req, res, next) {
   const domains = Object.values(allfeeds.data)
       .filter(filter => true === filter.active )
       .map(feed => feed.text);
-  const cache = await feedHelper.fetchRiver('Federated Wiki River', domains);
+  const output = await feedHelper.fetchRiver('Federated Wiki River', domains);
   const json = JSON.stringify(cache.data, null, 2);
-  cache.data = `${callback}(${json});`;
-  sendCachedOutput(req, res, cache, 'application/javascript');
+  output.data = `${callback}(${json});`;
+  sendCachedOutput(req, res, output, 'application/javascript');
 });
 
 router.get('/activefeeds.opml', async function (req, res, next) {
-  let cache = await feedHelper.fetchActiveFeeds();
-  sendCachedOutput(req, res, cache, 'text/xml');
+  const output = await feedHelper.fetchActiveFeeds();
+  sendCachedOutput(req, res, output, 'text/xml');
 });
 
 router.get('/:domain/peers.opml', async function (req, res, next) {
-  let cache = await feedHelper.fetchPeersOpml(req.params.domain, true);
-  sendCachedOutput(req, res, cache, 'text/xml');
+  console.log(req.params.domain);
+  res.json(req.params);
+  //const output = await feedHelper.fetchPeersOpml(req.params.domain, cache.status.preferCache);
+  //sendCachedOutput(req, res, output, 'text/xml');
 });
 
 router.get('/:domain/rss.xml', async function(req, res, next) {
-  let cache = await feedHelper.fetchSiteRss(req.params.domain, true);
-  sendCachedOutput(req, res, cache, 'application/rss+xml');
+  const output = await feedHelper.fetchSiteRss(req.params.domain, cache.status.preferCache);
+  sendCachedOutput(req, res, output, 'application/rss+xml');
 });
 
 module.exports = router;

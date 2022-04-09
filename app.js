@@ -1,17 +1,13 @@
-const config = require('./config');
 const createError = require('http-errors');
 const fedwikiHelper = require('./lib/fedwiki-helper');
 const feedHelper = require('./lib/feed-helper');
-const fs = require('fs');
 const everyMinute = require('./lib/every-minute');
 const express = require('express');
 const indexRouter = require('./routes/index');
 const path = require('path');
-const pageCache = require('./lib/page-cache');
 
-if (false === fs.existsSync(config.datadir)) {
-  fs.mkdirSync(config.datadir, { recursive: true });
-}
+const cache = require('./lib/cache');
+cache.setStore(require('./lib/cache-store-filesystem'));
 
 const app = express();
 
@@ -54,6 +50,8 @@ function arrayChunks(items, num) {
 let lastDay = 0, peerDomains = [], inactiveFeedChunks = [];
 
 everyMinute(async (expectedCycleTime) => {
+  return;
+
   let domain, homepage, feed;
 
   console.log('everyMinute: ' + new Date(expectedCycleTime));
