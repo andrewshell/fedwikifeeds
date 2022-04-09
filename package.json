@@ -4,7 +4,7 @@
   "description": "RSS 2.0 feeds and OPML subscription lists for the FedWiki network",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./bin/www.js --ignore 'data/*'",
+    "start": "nodemon --ignore data/ ./bin/www.js",
     "test": "mocha"
   },
   "repository": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/andrewshell/fedwikifeeds#readme",
   "dependencies": {
+    "csv": "^6.0.5",
     "daverss": "^0.5.30",
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",

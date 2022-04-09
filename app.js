@@ -6,9 +6,6 @@ const express = require('express');
 const indexRouter = require('./routes/index');
 const path = require('path');
 
-const cache = require('./lib/cache');
-cache.setStore(require('./lib/cache-store-filesystem'));
-
 const app = express();
 
 // view engine setup
@@ -50,8 +47,6 @@ function arrayChunks(items, num) {
 let lastDay = 0, peerDomains = [], inactiveFeedChunks = [];
 
 everyMinute(async (expectedCycleTime) => {
-  return;
-
   let domain, homepage, feed;
 
   console.log('everyMinute: ' + new Date(expectedCycleTime));
@@ -66,7 +61,9 @@ everyMinute(async (expectedCycleTime) => {
   }
 
   domain = peerDomains.shift();
-  await feedHelper.fetchPeersOpml(domain);
+  if (null != domain) {
+    await feedHelper.fetchPeersOpml(domain);
+  }
 
   if (0 === inactiveFeedChunks.length) {
     inactiveFeedChunks = arrayChunks(Object.values((await fedwikiHelper.fetchAllFeeds()).data)
