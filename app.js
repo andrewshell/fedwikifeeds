@@ -1,3 +1,4 @@
+const config = require('./config');
 const createError = require('http-errors');
 const fedwikiHelper = require('./lib/fedwiki-helper');
 const feedHelper = require('./lib/feed-helper');
@@ -18,6 +19,23 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+
+// route cname.json records
+app.use(function(req, res, next) {
+  const match = config.cname.find((cname) => {
+    return (cname[0] === req.headers.host || cname[1] === req.path);
+  });
+  if (null != match) {
+    let scheme = match[2] ?? 'http://';
+    if (match[0] === req.headers.host && '/' === req.path) {
+      req.url = match[1];
+    } else if (match[1] === req.path && match[0] !== req.headers.host) {
+      return res.redirect(301, `${scheme}${match[0]}/`);
+    }
+  }
+  console.dir(req.url);
+  next();
+});
 
 app.use('/', indexRouter);
 

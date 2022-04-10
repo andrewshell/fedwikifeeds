@@ -9,10 +9,6 @@ const Cache = require('../lib/cache');
 const cache = new Cache(require('../lib/cache-store-filesystem')(config));
 
 router.get('/', function(req, res, next) {
-  if ('fedwikiriver.com' === req.headers.host) {
-    req.url = '/river.html';
-    return next();
-  }
   res.render('index', {
     title: 'Federated Wiki Feeds',
     docroot: config.docroot
