@@ -38,26 +38,6 @@ router.get('/allfeeds.opml', async function (req, res, next) {
   sendCachedOutput(req, res, output, 'text/xml');
 });
 
-router.get('/river.json', async function (req, res, next) {
-  const allfeeds = await fedwikiHelper.fetchAllFeeds();
-  const domains = Object.values(allfeeds.data)
-      .filter(filter => true === filter.active )
-      .map(feed => feed.text);
-  const output = await feedHelper.fetchRiver('Federated Wiki River', domains);
-  sendCachedOutput(req, res, output, 'application/json');
-});
-
-router.get('/river.js', async function (req, res, next) {
-  const callback = req.query.callback || 'onGetRiverStream';
-  const allfeeds = await fedwikiHelper.fetchAllFeeds();
-  const domains = Object.values(allfeeds.data)
-      .filter(filter => true === filter.active )
-      .map(feed => feed.text);
-  const output = await feedHelper.fetchRiver('Federated Wiki River', domains);
-  const json = JSON.stringify(output.data, null, 2);
-  sendCachedOutput(req, res, cache.hit(output.cacheName, `${callback}(${json});`), 'application/javascript');
-});
-
 router.get('/river.csv', async function (req, res, next) {
   const allfeeds = await fedwikiHelper.fetchAllFeeds();
   const domains = Object.values(allfeeds.data)
@@ -71,6 +51,32 @@ router.get('/river.csv', async function (req, res, next) {
     return items;
   }, []);
   sendCachedOutput(req, res, cache.hit(output.cacheName, csv.stringify(flattened)), 'text/csv');
+});
+
+router.get('/river.html', async function (req, res, next) {
+  res.render('river', {
+    layout: false
+  });
+});
+
+router.get('/river.js', async function (req, res, next) {
+  const callback = req.query.callback || 'onGetRiverStream';
+  const allfeeds = await fedwikiHelper.fetchAllFeeds();
+  const domains = Object.values(allfeeds.data)
+      .filter(filter => true === filter.active )
+      .map(feed => feed.text);
+  const output = await feedHelper.fetchRiver('Federated Wiki River', domains);
+  const json = JSON.stringify(output.data, null, 2);
+  sendCachedOutput(req, res, cache.hit(output.cacheName, `${callback}(${json});`), 'application/javascript');
+});
+
+router.get('/river.json', async function (req, res, next) {
+  const allfeeds = await fedwikiHelper.fetchAllFeeds();
+  const domains = Object.values(allfeeds.data)
+      .filter(filter => true === filter.active )
+      .map(feed => feed.text);
+  const output = await feedHelper.fetchRiver('Federated Wiki River', domains);
+  sendCachedOutput(req, res, output, 'application/json');
 });
 
 router.get('/activefeeds.opml', async function (req, res, next) {

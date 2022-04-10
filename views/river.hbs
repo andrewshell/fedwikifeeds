@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Federated Wiki River</title>
+    <link rel="alternate" type="application/rss+xml" title="OPML" href="/activefeeds.opml" />
+    <meta name="description" content="Federated Wiki River">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.3.6/journal/bootstrap.min.css">
+    <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+    <!--[if lt IE 9]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+    <style type="text/css">
+    .container {
+        max-width: 750px;
+    }
+    .compact .description,
+    .compact .footer {
+        display: none;
+    }
+
+    @media (min-width: 768px) {
+        .text-sm-right {
+            text-align: right;
+        }
+    }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-default navbar-static-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <span class="navbar-brand">fedwikiriver.com</span>
+        </div>
+        <div class="collapse navbar-collapse" id="topnav-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li><p class="navbar-text">Federated Wiki River</p></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div id="stream">
+        <div class="text-center">
+        <p class="notice">Loading news from the server.&hellip;</p>
+        <div class="loader"><i class="fa fa-spinner fa-5x fa-spin"></i></div>
+        </div>
+        <!-- news feed via template inserted here -->
+    </div>
+</div>
+<footer class="container">
+    <div class="text-center small text-muted">
+        <p>Powered by <a href="http://feeds.fedwikiriver.com/">Federated Wiki Feeds</a></p>
+    </div>
+</footer>
+<script>
+    var jsonFeed = '/river.js';
+    var jsonCallback = 'onGetRiverStream';
+    </script>
+
+{{{{raw}}}}
+<script id="template" type="text/x-handlebars-template">
+    <div class="page-header row">
+        <div class="col-sm-6"><a id="display" href="#"><span class="fa fa-list"></span> Switch to compact view</a></div>
+        <div class="col-sm-6 text-sm-right">Updated <time datetime="{{isoUtcDateTime metadata.whenGMT}}">{{timeDate metadata.whenGMT}}</time></div>
+    </div>
+    {{#each updatedFeeds.updatedFeed}}
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="row">
+                <h4 class="col-sm-6 panel-title">
+                <i class="fa fa-caret-down list-group-toggle" aria-hidden="true" data-idx="{{@index}}"></i>&nbsp;
+                {{#if websiteUrl}}<a href="{{websiteUrl}}">{{/if}}<img class="icon hidden-xs" src="{{getFavicon websiteUrl}}" alt=""> {{feedTitle}}{{#if websiteUrl}}</a>{{/if}} (<a href="{{feedUrl}}" title="Subscribe to {{feedTitle}}">Feed</a>)
+                </h4>
+                <div class="col-sm-6 text-sm-right small">{{timeDate whenLastUpdate}}</div>
+            </div>
+        </div>
+
+        <ul class="list-group" id="list-group-{{@index}}">
+        {{#each item}}
+        <li class="list-group-item">
+            <div class="media">
+                <div class="media-body">
+                    <div class="media-heading h4">
+                        <a href="{{#if permaLink}}{{permaLink}}{{else}}{{link}}{{/if}}" rel="external">{{#if title}}{{title}}{{else}}{{body}}{{/if}}</a>
+                    </div>
+                    {{#if title}}{{#if body}}
+                    <p class="description">
+                        {{#each thumbnail}}
+                        <img class="thumbnail" src="{{url}}" width="{{width}}" height="{{height}}" alt="">
+                        {{/each}}
+                        {{{body}}}
+                    </p>
+                    {{/if}}{{/if}}
+                    <div class="footer">
+                        <ul class="list-inline small">
+                            <li>{{prettyDate pubDate}}</li>
+                            {{#if comments}}
+                                <li><a href="{{comments}}" rel="external nofollow" target="_blank">Comment</a></li>
+                            {{/if}}
+                            {{#each enclosure}}
+                                <li class="enclosure {{getEnclosureType type}}"><a href="{{url}}">Download enclosure ({{type}}, {{getEnclosureSize length}})</a></li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </li>
+        {{/each}}
+        </ul>
+    </div>
+    {{/each}}
+</script>
+{{{{/raw}}}}
+
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.6.0/moment.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0-alpha.4/handlebars.min.js"></script>
+<script type="text/javascript">
+jQuery.noConflict();
+jQuery(document).ready(function () {
+    getFeed(jsonFeed, jsonCallback);
+});
+
+Handlebars.registerHelper('getEnclosureSize', getEnclosureSize);
+Handlebars.registerHelper('getEnclosureType', getEnclosureType);
+Handlebars.registerHelper('getFavicon', getFavicon);
+Handlebars.registerHelper('isoUtcDateTime', isoUtcDateTime);
+Handlebars.registerHelper('prettyDate', prettyDate);
+Handlebars.registerHelper('timeDate', timeDate);
+
+/*
+ * Display options
+ */
+
+function display() {
+    var $viewLink = jQuery('#display');
+    var $stream = jQuery('#stream');
+    var fullText = '<span class="fa fa-th-list"></span> Switch to full view';
+    var compactText = '<span class="fa fa-list"></span> Switch to compact view';
+
+    var displayType = getCookie('display');
+
+    if (displayType == 'compact') {
+        $viewLink.html(fullText);
+        $stream.addClass('compact');
+    }
+
+    $viewLink.click(function(e) {
+        e.preventDefault();
+        if ($stream.is('.compact')) {
+            setCookie('display','full',30);
+            $viewLink.html(compactText);
+            $stream.removeClass('compact');
+        } else {
+            setCookie('display','compact',30);
+            $viewLink.html(fullText);
+            $stream.addClass('compact');
+        }
+    });
+
+    jQuery('.list-group-toggle').each(function () {
+        var $this = jQuery(this);
+        $this.on("click", function () {
+            var idx = jQuery(this).data('idx');
+            if (jQuery(`#list-group-${idx}`).is(':visible')) {
+                jQuery(`#list-group-${idx}`).hide();
+                jQuery(this).removeClass('fa-caret-down');
+                jQuery(this).addClass('fa-caret-right');
+            } else {
+                jQuery(`#list-group-${idx}`).show();
+                jQuery(this).removeClass('fa-caret-right');
+                jQuery(this).addClass('fa-caret-down');
+            }
+        });
+    });
+};
+
+/*
+ * Human readable file size
+ * http://blog.elctech.com/2009/01/06/convert-filesize-bytes-to-readable-string-in-javascript/
+ */
+
+function getEnclosureSize(bytes) {
+    var s = ['bytes', 'kB', 'MB', 'GB', 'TB'];
+    var e = Math.floor(Math.log(bytes) / Math.log(1024));
+    return (bytes / Math.pow(1024, Math.floor(e))).toFixed(2) + " " +s[e];
+};
+
+/*
+ * Get media type (used as a class in the HTML)
+ */
+
+function getEnclosureType(type) {
+    var typeClass = type.split('/')[0];
+    return typeClass;
+};
+
+/*
+ * Look for the feed source's favicon
+ */
+
+function getFavicon(url) {
+    var domain = getDomain(url);
+    var src = 'http://www.google.com/s2/favicons?domain=' + domain;
+    return src;
+};
+
+/*
+ * Clean up URL to return a domain
+ */
+
+function getDomain(url) {
+    if (( url != null ) && (url != "")) {
+        url = url.replace("www.","").replace("www2.", "").replace("feedproxy.", "").replace("feeds.", "");
+        var root = url.split('?')[0]; // cleans urls of form http://domain.com?a=1&b=2
+        var url = root.split('/')[2];
+    }
+    return url;
+};
+
+/*
+ * Retrieve JSONP feed and populate the template
+ */
+
+function getFeed(uri, callback) {
+    // Assign handlers immediately after making the request, and remember the jxhr object for this request
+    var jxhr = jQuery.ajax({
+    url: uri ,
+    dataType: "jsonp" ,
+    timeout: 30000 ,
+    jsonpCallback : callback })
+    .success(function(data, status) {
+        var source = jQuery('#template').html();
+        var template = Handlebars.compile(source);
+        var rendered = template(data);
+        jQuery('#stream').html(rendered);
+        display();
+    })
+    .error(function(status) {
+        var  textStatus = status.statusText
+        if ( textStatus == "timeout" ) {
+            jQuery("#stream").html('<p class="notice">Can\'t display the river because the request to the JSON server timed out</p>');
+        }
+        else if ( textStatus == "error" ) {
+            jQuery("#stream").html('<p class="notice">Can\'t display the river because the response from the JSON server is not valid</p>');
+        }
+        else if ( textStatus != "success" ) {
+            jQuery("#stream").html('<p class="notice">Error, status: ' + textStatus + ', please try again later</p>');
+        }
+    });
+}
+
+function isoUtcDateTime(value) {
+    var dt = moment.utc(value.replace('GMT', '+0000'), 'ddd, DD MMM YYYY HH:mm:ss Z');
+    var format = 'YYYY-MM-DDTHH:mm:ss';
+    return dt.format(format) + 'Z';
+}
+
+function prettyDate(value) {
+    var dt = moment(value.replace('GMT', '+0000'), 'ddd, DD MMM YYYY HH:mm:ss Z');
+    return dt.fromNow();
+}
+
+function timeDate(value) {
+    var dt = moment(value.replace('GMT', '+0000'), 'ddd, DD MMM YYYY HH:mm:ss Z');
+    var format = 'h:mm:ss A; DD MMM';
+    return dt.format(format);
+}
+
+/*
+ * Cookies: set, get, delete
+ * http://www.quirksmode.org/js/cookies.html
+ */
+
+function setCookie(name, value, days) {
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        var expires = "; expires=" + date.toGMTString();
+    }
+    else var expires = "";
+    document.cookie = name + "=" + value + expires + "; path=/";
+};
+
+function getCookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i ++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+};
+
+function deleteCookie(name) {
+    setCookie(name, "", -1);
+};
+</script>
+</body>
+</html>

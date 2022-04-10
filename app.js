@@ -9,8 +9,11 @@ const path = require('path');
 const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+const hbs  = require('hbs');
+hbs.registerHelper('raw', function (options) { return options.fn(this); });
+
 app.set('view engine', 'hbs');
+app.set('views', path.join(__dirname, 'views'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
