@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Federated Wiki River</title>
-    <link rel="alternate" type="application/rss+xml" title="OPML" href="/activefeeds.opml" />
+    <title>{{ title }}</title>
+    <link rel="alternate" type="application/rss+xml" title="OPML" href="{{ opmlList }}" />
     <meta name="description" content="Federated Wiki River">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.3.6/journal/bootstrap.min.css">
@@ -30,13 +30,16 @@
 <nav class="navbar navbar-default navbar-static-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <span class="navbar-brand">fedwikiriver.com</span>
+            <span class="navbar-brand">{{ domain }}</span>
         </div>
         <div class="collapse navbar-collapse" id="topnav-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li><p class="navbar-text">Federated Wiki River</p></li>
+                <li><p class="navbar-text">{{ title }}</p></li>
             </ul>
         </div>
+    </div>
+    <div class="container">
+        <p>{{ description }}</p>
     </div>
 </nav>
 <div class="container">
@@ -54,7 +57,7 @@
     </div>
 </footer>
 <script>
-    var jsonFeed = '/river.js';
+    var jsonFeed = '{{ jsonFeed }}';
     var jsonCallback = 'onGetRiverStream';
     </script>
 

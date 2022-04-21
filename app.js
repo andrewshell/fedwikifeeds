@@ -1,3 +1,4 @@
+const cacheStoreCommon = require('./lib/cache-store-common');
 const config = require('./config');
 const createError = require('http-errors');
 const fedwikiHelper = require('./lib/fedwiki-helper');
@@ -6,6 +7,8 @@ const everyMinute = require('./lib/every-minute');
 const express = require('express');
 const indexRouter = require('./routes/index');
 const path = require('path');
+const dayjs = require('dayjs');
+dayjs.extend(require('dayjs/plugin/utc'))
 
 const app = express();
 
@@ -31,9 +34,11 @@ app.use(function(req, res, next) {
       req.url = match[1];
     } else if (match[1] === req.path && match[0] !== req.headers.host) {
       return res.redirect(301, `${scheme}${match[0]}/`);
+    } else if ('/allfeeds.opml' == req.path) {
+      console.error(`Deprecated path: ${req.path}`);
+      return res.redirect(301, `${scheme}${req.headers.host}/river.opml`);
     }
   }
-  console.dir(req.url);
   next();
 });
 
@@ -65,10 +70,11 @@ function arrayChunks(items, num) {
   return chunks;
 }
 
-let lastDay = 0, peerDomains = [], inactiveFeedChunks = [];
+let lastDay = 0, peerDomains = [], inactiveFeedChunks = [], watchedRosters = [];
+const twoWeeksAgo = dayjs().subtract(2, 'week');
 
 everyMinute(async (expectedCycleTime) => {
-  let domain, homepage, feed;
+  let domain, homepage, feed, roster;
 
   console.log('everyMinute: ' + new Date(expectedCycleTime));
 
@@ -83,7 +89,7 @@ everyMinute(async (expectedCycleTime) => {
 
   domain = peerDomains.shift();
   if (null != domain) {
-    await feedHelper.fetchPeersOpml(domain);
+    await feedHelper.fetchPeersOpml(domain, cacheStoreCommon.Status.cacheOnFail);
   }
 
   if (0 === inactiveFeedChunks.length) {
@@ -91,12 +97,22 @@ everyMinute(async (expectedCycleTime) => {
       .filter(filter => { return false === filter.active; }), 60);
   }
 
+  if (0 === watchedRosters.length) {
+    watchedRosters = Object.values((await fedwikiHelper.fetchAllRosters()).data).filter((roster) => {
+      return dayjs(roster.lastRequest).isAfter(twoWeeksAgo, 'day');
+    });
+  }
+  roster = watchedRosters.shift();
+  if (null != roster) {
+    await feedHelper.fetchRosterOpml(roster.domain, roster.page, cacheStoreCommon.Status.cacheOnFail);
+  }
+
   allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data)
     .filter(filter => filter.active || false)
     .concat(inactiveFeedChunks.shift());
 
   for (const feed of allFeeds) {
-    await feedHelper.fetchSiteRss(feed.text);
+    await feedHelper.fetchSiteRss(feed.text, cacheStoreCommon.Status.cacheOnFail);
   }
 });
 

@@ -4,16 +4,11 @@ const router = express.Router();
 const fedwikiHelper = require('../lib/fedwiki-helper');
 const feedHelper = require('../lib/feed-helper');
 const csv = require('csv/sync');
+const dayjs = require('dayjs');
+dayjs.extend(require('dayjs/plugin/utc'))
 
 const Cache = require('../lib/cache');
 const cache = new Cache(require('../lib/cache-store-filesystem')(config));
-
-router.get('/', function(req, res, next) {
-  res.render('index', {
-    title: 'Federated Wiki Feeds',
-    docroot: config.docroot
-  });
-});
 
 function sendCachedOutput(req, res, cacheRes, contentType) {
   const ifNoneMatch = req.get('if-none-match');
@@ -33,7 +28,33 @@ function sendCachedOutput(req, res, cacheRes, contentType) {
   }
 }
 
-router.get('/allfeeds.opml', async function (req, res, next) {
+/**
+ * Home
+ */
+
+router.get('/', function(req, res, next) {
+  res.render('index', {
+    title: 'Federated Wiki Feeds',
+    docroot: config.docroot
+  });
+});
+
+/**
+ * All Feeds
+ */
+
+router.get('/river.html', async function (req, res, next) {
+  res.render('river', {
+    layout: false,
+    domain: req.headers.host || 'fedwikiriver.com',
+    title: `Federated Wiki River`,
+    description: `A river of updates from across the Federated Wiki network.`,
+    opmlList: `/river.opml`,
+    jsonFeed: `/river.js`
+  });
+});
+
+router.get('/river.opml', async function (req, res, next) {
   const output = await feedHelper.fetchAllFeeds();
   sendCachedOutput(req, res, output, 'text/xml');
 });
@@ -51,12 +72,6 @@ router.get('/river.csv', async function (req, res, next) {
     return items;
   }, []);
   sendCachedOutput(req, res, cache.hit(output.cacheName, csv.stringify(flattened)), 'text/csv');
-});
-
-router.get('/river.html', async function (req, res, next) {
-  res.render('river', {
-    layout: false
-  });
 });
 
 router.get('/river.js', async function (req, res, next) {
@@ -84,6 +99,10 @@ router.get('/activefeeds.opml', async function (req, res, next) {
   sendCachedOutput(req, res, output, 'text/xml');
 });
 
+/**
+ * Domains
+ */
+
 router.get('/:domain/peers.opml', async function (req, res, next) {
   const output = await feedHelper.fetchPeersOpml(req.params.domain, cache.status.preferCache);
   sendCachedOutput(req, res, output, 'text/xml');
@@ -92,6 +111,85 @@ router.get('/:domain/peers.opml', async function (req, res, next) {
 router.get('/:domain/rss.xml', async function(req, res, next) {
   const output = await feedHelper.fetchSiteRss(req.params.domain, cache.status.preferCache);
   sendCachedOutput(req, res, output, 'application/rss+xml');
+});
+
+/**
+ * Rosters
+ */
+
+router.get('/:domain/:page/roster.html', async function (req, res, next) {
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  res.render('river', {
+    layout: false,
+    domain: req.headers.host || req.params.domain,
+    title: roster.data.title,
+    description: roster.data.description,
+    opmlList: `/${req.params.domain}/${req.params.domain}/roster.opml`,
+    jsonFeed: `/${req.params.domain}/${req.params.page}/roster.js`
+  });
+});
+
+router.get('/:domain/:page/roster.opml', async function (req, res, next) {
+  let allrosters = (await fedwikiHelper.fetchAllRosters()).data;
+  allrosters[`${req.params.domain}/${req.params.page}`] = {
+    domain: req.params.domain,
+    page: req.params.page,
+    lastRequest: dayjs().toISOString()
+  };
+  await fedwikiHelper.saveAllRosters(allrosters);
+
+  const output = await feedHelper.fetchRosterOpml(req.params.domain, req.params.page, cache.status.preferCache);
+  sendCachedOutput(req, res, output, 'text/xml');
+});
+
+router.get('/:domain/:page/roster.js', async function (req, res, next) {
+  let allrosters = (await fedwikiHelper.fetchAllRosters()).data;
+  allrosters[`${req.params.domain}/${req.params.page}`] = {
+    domain: req.params.domain,
+    page: req.params.page,
+    lastRequest: dayjs().toISOString()
+  };
+  await fedwikiHelper.saveAllRosters(allrosters);
+
+  const callback = req.query.callback || 'onGetRiverStream';
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  const output = await feedHelper.fetchRiver(`Roster from ${req.params.page}/${req.params.page}`, roster.data.domains);
+  const json = JSON.stringify(output.data, null, 2);
+  sendCachedOutput(req, res, cache.hit(output.cacheName, `${callback}(${json});`), 'application/javascript');
+});
+
+router.get('/:domain/:page/roster.json', async function (req, res, next) {
+  let allrosters = (await fedwikiHelper.fetchAllRosters()).data;
+  allrosters[`${req.params.domain}/${req.params.page}`] = {
+    domain: req.params.domain,
+    page: req.params.page,
+    lastRequest: dayjs().toISOString()
+  };
+  await fedwikiHelper.saveAllRosters(allrosters);
+
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  const output = await feedHelper.fetchRiver(`Roster from ${req.params.page}/${req.params.page}`, roster.data.domains);
+  sendCachedOutput(req, res, output, 'application/json');
+});
+
+router.get('/:domain/:page/roster.csv', async function (req, res, next) {
+  let allrosters = (await fedwikiHelper.fetchAllRosters()).data;
+  allrosters[`${req.params.domain}/${req.params.page}`] = {
+    domain: req.params.domain,
+    page: req.params.page,
+    lastRequest: dayjs().toISOString()
+  };
+  await fedwikiHelper.saveAllRosters(allrosters);
+
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  const output = await feedHelper.fetchRiver(`Roster from ${req.params.page}/${req.params.page}`, roster.data.domains);
+  const flattened = output.data.updatedFeeds.updatedFeed.reduce((items, feed) => {
+    for (let item of feed.item) {
+      items.push([feed.feedTitle, feed.feedUrl, feed.websiteUrl, feed.feedDescription, feed.whenLastUpdate, item.title, item.link, item.body, item.pubDate, item.permaLink, item.id]);
+    }
+    return items;
+  }, []);
+  sendCachedOutput(req, res, cache.hit(output.cacheName, csv.stringify(flattened)), 'text/csv');
 });
 
 module.exports = router;

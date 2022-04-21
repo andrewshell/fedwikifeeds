@@ -22,20 +22,28 @@
     <li><a href="{{docroot}}/wellspring.fed.wiki/peers.opml">{{docroot}}/wellspring.fed.wiki/peers.opml</a></li>
 </ul>
 
-<h3>Active and All Feeds Subscription Lists</h3>
-<p>I also generate a subscription lists for active feeds (updates in the last week) and all feeds.</p>
+<h3>All Feeds Subscription Lists & River</h3>
+<p>I generate subscription lists and rivers with all feeds and updates.</p>
 <ul>
-    <li><a href="{{docroot}}/activefeeds.opml">{{docroot}}/activefeeds.opml</a></li>
-    <li><a href="{{docroot}}/allfeeds.opml">{{docroot}}/allfeeds.opml</a></li>
+    <li><a href="{{docroot}}/river.opml">All feeds subscription list</li>
+    <li><a href="{{docroot}}/activefeeds.opml">All feeds active in the last week subscription list</li>
+    <li><a href="{{docroot}}/river.html">Federated Wiki River</a></li>
+    <li><a href="{{docroot}}/river.json">All Feeds River JSON source</a></li>
+    <li><a href="{{docroot}}/river.js?callback=getRiver">All Feeds River JSONP source</a></li>
+    <li><a href="{{docroot}}/river.csv">All Feeds River CSV source</a></li>
 </ul>
 
-<h2>River of Updates</h2>
-<p>Finally, check out our <a href="http://riverjs.org/">river.js</a> feed if you'd like to see an easily browsable list of the latest updates.</p>
+<h3>Roster Subscription Lists & Rivers</h3>
+<p>I generate subscription lists and rivers for subsets of wikis defined by a <a href="http://fed.wiki/view/about-roster-plugin">roster</a>.</p>
+<p>To generate a river from a roster simply navigate to  <code>{{docroot}}/{wikidomain}/{page}/roster.html</code>.</p>
+
+<h3>Example Roster River for <a href="http://dojo.fed.wiki/view/wiki-writing-workshop">dojo.fed.wiki/wiki-writing-workshop</a></h3>
 <ul>
-    <li><a href="{{docroot}}/river.html">Federated Wiki River</a></li>
-    <li><a href="{{docroot}}/river.json">River JSON source</a></li>
-    <li><a href="{{docroot}}/river.js?callback=getRiver">River JSONP source</a></li>
-    <li><a href="{{docroot}}/river.csv">River CSV source</a></li>
+    <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.opml">Roster subscription list</li>
+    <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.html">Roster River</a></li>
+    <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.json">Roster JSON source</a></li>
+    <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.js?callback=getRiver">Roster JSONP source</a></li>
+    <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.csv">Roster CSV source</a></li>
 </ul>
 
 <h2>Source Code and Issues</h2>
