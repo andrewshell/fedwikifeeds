@@ -11,29 +11,20 @@
     <li><a href="{{docroot}}/wellspring.fed.wiki/rss.xml">{{docroot}}/wellspring.fed.wiki/rss.xml</a></li>
 </ul>
 
-<h2>OPML Subscription Lists</h2>
-<p>Most RSS readers support importing OPML subscription lists and some (like <a href="https://github.com/scripting/river5">River5</a>) support subscribing to an OPML subscription list.</p>
-<p>You can generate an OPML subscription list of a wiki's peers by navigating to <code>{{docroot}}/{wikidomain}/peers.opml</code>.</p>
+<h2>Peer Subscription Lists & Rivers</h2>
+<p>I generate subscription lists and rivers for peers of a wiki defined by the <a href="http://ward.dojo.fed.wiki/view/about-present-plugin">preset plugin</a>.</p>
+<p>You can generate a river a wiki's peers by navigating to <code>{{docroot}}/{wikidomain}/peers.html</code>.</p>
 
-<h3>Example Subscription Lists</h3>
+<h3>Example Peer River for <a href="http://ward.dojo.fed.wiki/">ward.dojo.fed.wiki</a></h3>
 <ul>
-    <li><a href="{{docroot}}/andrew.dojo.fed.wiki/peers.opml">{{docroot}}/andrew.dojo.fed.wiki/peers.opml</a></li>
-    <li><a href="{{docroot}}/ward.asia.wiki.org/peers.opml">{{docroot}}/ward.asia.wiki.org/peers.opml</a></li>
-    <li><a href="{{docroot}}/wellspring.fed.wiki/peers.opml">{{docroot}}/wellspring.fed.wiki/peers.opml</a></li>
+    <li><a href="{{docroot}}/ward.dojo.fed.wiki/peers.opml">Peers subscription list</li>
+    <li><a href="{{docroot}}/ward.dojo.fed.wiki/peers.html">Peers River</a></li>
+    <li><a href="{{docroot}}/ward.dojo.fed.wiki/peers.json">Peers JSON source</a></li>
+    <li><a href="{{docroot}}/ward.dojo.fed.wiki/peers.js?callback=getRiver">Peers JSONP source</a></li>
+    <li><a href="{{docroot}}/ward.dojo.fed.wiki/peers.csv">Peers CSV source</a></li>
 </ul>
 
-<h3>All Feeds Subscription Lists & River</h3>
-<p>I generate subscription lists and rivers with all feeds and updates.</p>
-<ul>
-    <li><a href="{{docroot}}/river.opml">All feeds subscription list</li>
-    <li><a href="{{docroot}}/activefeeds.opml">All feeds active in the last week subscription list</li>
-    <li><a href="{{docroot}}/river.html">Federated Wiki River</a></li>
-    <li><a href="{{docroot}}/river.json">All Feeds River JSON source</a></li>
-    <li><a href="{{docroot}}/river.js?callback=getRiver">All Feeds River JSONP source</a></li>
-    <li><a href="{{docroot}}/river.csv">All Feeds River CSV source</a></li>
-</ul>
-
-<h3>Roster Subscription Lists & Rivers</h3>
+<h2>Roster Subscription Lists & Rivers</h2>
 <p>I generate subscription lists and rivers for subsets of wikis defined by a <a href="http://fed.wiki/view/about-roster-plugin">roster</a>.</p>
 <p>To generate a river from a roster simply navigate to  <code>{{docroot}}/{wikidomain}/{page}/roster.html</code>.</p>
 
@@ -44,6 +35,17 @@
     <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.json">Roster JSON source</a></li>
     <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.js?callback=getRiver">Roster JSONP source</a></li>
     <li><a href="{{docroot}}/dojo.fed.wiki/wiki-writing-workshop/roster.csv">Roster CSV source</a></li>
+</ul>
+
+<h2>All Feeds Subscription Lists & River</h2>
+<p>I generate subscription lists and rivers with all feeds and updates.</p>
+<ul>
+    <li><a href="{{docroot}}/river.opml">All feeds subscription list</li>
+    <li><a href="{{docroot}}/activefeeds.opml">All feeds active in the last week subscription list</li>
+    <li><a href="{{docroot}}/river.html">Federated Wiki River</a></li>
+    <li><a href="{{docroot}}/river.json">All Feeds River JSON source</a></li>
+    <li><a href="{{docroot}}/river.js?callback=getRiver">All Feeds River JSONP source</a></li>
+    <li><a href="{{docroot}}/river.csv">All Feeds River CSV source</a></li>
 </ul>
 
 <h2>Source Code and Issues</h2>
