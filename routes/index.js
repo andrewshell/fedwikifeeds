@@ -7,8 +7,8 @@ const csv = require('csv/sync');
 const dayjs = require('dayjs');
 dayjs.extend(require('dayjs/plugin/utc'))
 
-const Cache = require('../lib/cache');
-const cache = new Cache(require('../lib/cache-store-filesystem')(config));
+const Cacheism = require('@andrewshell/cacheism');
+const cache = new Cacheism(Cacheism.store.filesystem(config));
 
 function sendCachedOutput(req, res, cacheRes, contentType) {
   const ifNoneMatch = req.get('if-none-match');
@@ -104,7 +104,7 @@ router.get('/activefeeds.opml', async function (req, res, next) {
  */
 
 router.get('/:domain/rss.xml', async function(req, res, next) {
-  const output = await feedHelper.fetchSiteRss(req.params.domain, cache.status.preferCache);
+  const output = await feedHelper.fetchSiteRss(req.params.domain, Cacheism.Status.preferCache);
   sendCachedOutput(req, res, output, 'application/rss+xml');
 });
 
@@ -124,26 +124,26 @@ router.get('/:domain/peers.html', async function (req, res, next) {
 });
 
 router.get('/:domain/peers.opml', async function (req, res, next) {
-  const output = await feedHelper.fetchPeersOpml(req.params.domain, cache.status.preferCache);
+  const output = await feedHelper.fetchPeersOpml(req.params.domain, Cacheism.Status.preferCache);
   sendCachedOutput(req, res, output, 'text/xml');
 });
 
 router.get('/:domain/peers.js', async function (req, res, next) {
   const callback = req.query.callback || 'onGetRiverStream';
-  const peers = await fedwikiHelper.fetchPeers(req.params.domain, cache.status.preferCache);
+  const peers = await fedwikiHelper.fetchPeers(req.params.domain, Cacheism.Status.preferCache);
   const output = await feedHelper.fetchRiver(`Peers of ${req.params.domain}`, peers.data);
   const json = JSON.stringify(output.data, null, 2);
   sendCachedOutput(req, res, cache.hit(output.cacheName, `${callback}(${json});`), 'application/javascript');
 });
 
 router.get('/:domain/peers.json', async function (req, res, next) {
-  const peers = await fedwikiHelper.fetchPeers(req.params.domain, cache.status.preferCache);
+  const peers = await fedwikiHelper.fetchPeers(req.params.domain, Cacheism.Status.preferCache);
   const output = await feedHelper.fetchRiver(`Peers of ${req.params.domain}`, peers.data);
   sendCachedOutput(req, res, output, 'application/json');
 });
 
 router.get('/:domain/peers.csv', async function (req, res, next) {
-  const peers = await fedwikiHelper.fetchPeers(req.params.domain, cache.status.preferCache);
+  const peers = await fedwikiHelper.fetchPeers(req.params.domain, Cacheism.Status.preferCache);
   const output = await feedHelper.fetchRiver(`Peers of ${req.params.domain}`, peers.data);
   const flattened = output.data.updatedFeeds.updatedFeed.reduce((items, feed) => {
     for (let item of feed.item) {
@@ -159,7 +159,7 @@ router.get('/:domain/peers.csv', async function (req, res, next) {
  */
 
 router.get('/:domain/:page/roster.html', async function (req, res, next) {
-  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, Cacheism.Status.preferCache);
   res.render('river', {
     layout: false,
     domain: req.headers.host || req.params.domain,
@@ -179,7 +179,7 @@ router.get('/:domain/:page/roster.opml', async function (req, res, next) {
   };
   await fedwikiHelper.saveAllRosters(allrosters);
 
-  const output = await feedHelper.fetchRosterOpml(req.params.domain, req.params.page, cache.status.preferCache);
+  const output = await feedHelper.fetchRosterOpml(req.params.domain, req.params.page, Cacheism.Status.preferCache);
   sendCachedOutput(req, res, output, 'text/xml');
 });
 
@@ -193,7 +193,7 @@ router.get('/:domain/:page/roster.js', async function (req, res, next) {
   await fedwikiHelper.saveAllRosters(allrosters);
 
   const callback = req.query.callback || 'onGetRiverStream';
-  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, Cacheism.Status.preferCache);
   const output = await feedHelper.fetchRiver(`Roster from ${req.params.domain}/${req.params.page}`, roster.data.domains);
   const json = JSON.stringify(output.data, null, 2);
   sendCachedOutput(req, res, cache.hit(output.cacheName, `${callback}(${json});`), 'application/javascript');
@@ -208,7 +208,7 @@ router.get('/:domain/:page/roster.json', async function (req, res, next) {
   };
   await fedwikiHelper.saveAllRosters(allrosters);
 
-  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, Cacheism.Status.preferCache);
   const output = await feedHelper.fetchRiver(`Roster from ${req.params.domain}/${req.params.page}`, roster.data.domains);
   sendCachedOutput(req, res, output, 'application/json');
 });
@@ -222,7 +222,7 @@ router.get('/:domain/:page/roster.csv', async function (req, res, next) {
   };
   await fedwikiHelper.saveAllRosters(allrosters);
 
-  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, cache.status.preferCache);
+  const roster = await fedwikiHelper.fetchRoster(req.params.domain, req.params.page, Cacheism.Status.preferCache);
   const output = await feedHelper.fetchRiver(`Roster from ${req.params.domain}/${req.params.page}`, roster.data.domains);
   const flattened = output.data.updatedFeeds.updatedFeed.reduce((items, feed) => {
     for (let item of feed.item) {

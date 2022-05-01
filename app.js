@@ -1,4 +1,3 @@
-const cacheStoreCommon = require('./lib/cache-store-common');
 const config = require('./config');
 const createError = require('http-errors');
 const fedwikiHelper = require('./lib/fedwiki-helper');
@@ -9,6 +8,9 @@ const indexRouter = require('./routes/index');
 const path = require('path');
 const dayjs = require('dayjs');
 dayjs.extend(require('dayjs/plugin/utc'))
+
+const Cacheism = require('@andrewshell/cacheism');
+const cache = new Cacheism(Cacheism.store.filesystem(config));
 
 const app = express();
 
@@ -89,7 +91,7 @@ everyMinute(async (expectedCycleTime) => {
 
   domain = peerDomains.shift();
   if (null != domain) {
-    await feedHelper.fetchPeersOpml(domain, cacheStoreCommon.Status.cacheOnFail);
+    await feedHelper.fetchPeersOpml(domain, Cacheism.Status.cacheOnFail);
   }
 
   if (0 === inactiveFeedChunks.length) {
@@ -104,7 +106,7 @@ everyMinute(async (expectedCycleTime) => {
   }
   roster = watchedRosters.shift();
   if (null != roster) {
-    await feedHelper.fetchRosterOpml(roster.domain, roster.page, cacheStoreCommon.Status.cacheOnFail);
+    await feedHelper.fetchRosterOpml(roster.domain, roster.page, Cacheism.Status.cacheOnFail);
   }
 
   allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data)
@@ -112,7 +114,7 @@ everyMinute(async (expectedCycleTime) => {
     .concat(inactiveFeedChunks.shift());
 
   for (const feed of allFeeds) {
-    await feedHelper.fetchSiteRss(feed.text, cacheStoreCommon.Status.cacheOnFail);
+    await feedHelper.fetchSiteRss(feed.text, Cacheism.Status.cacheOnFail);
   }
 });
 
