@@ -1,6 +1,6 @@
 {
   "name": "fedwikifeeds",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "RSS 2.0 feeds and OPML subscription lists for the FedWiki network",
   "main": "index.js",
   "scripts": {
