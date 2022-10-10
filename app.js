@@ -89,7 +89,7 @@ everyMinute(async (expectedCycleTime) => {
     peerDomains = await fedwikiHelper.fetchAllPeerDomains();
   }
 
-  domain = peerDomains.shift();
+  domain = peerDomains.shift().toLowerCase();
   if (null != domain) {
     await feedHelper.fetchPeersOpml(domain, Cacheism.Status.cacheOnFail);
   }

@@ -88,12 +88,12 @@
                         <a href="{{#if permaLink}}{{permaLink}}{{else}}{{link}}{{/if}}" rel="external">{{#if title}}{{title}}{{else}}{{body}}{{/if}}</a>
                     </div>
                     {{#if title}}{{#if body}}
-                    <p class="description">
+                    <div class="description">
                         {{#each thumbnail}}
                         <img class="thumbnail" src="{{url}}" width="{{width}}" height="{{height}}" alt="">
                         {{/each}}
                         {{{body}}}
-                    </p>
+                    </div>
                     {{/if}}{{/if}}
                     <div class="footer">
                         <ul class="list-inline small">
