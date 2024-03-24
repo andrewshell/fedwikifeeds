@@ -8,6 +8,8 @@ require('dotenv').config()
 
 const app = require('../app');
 const http = require('http');
+const log = require('../lib/log');
+const logPrefix = 'www         ';
 
 /**
  * Get port from environment and store in Express.
@@ -66,11 +68,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      console.error(bind + ' requires elevated privileges');
+      log.error(logPrefix, '%s requires elevated privileges', bind);
       process.exit(1);
       break;
     case 'EADDRINUSE':
-      console.error(bind + ' is already in use');
+      log.error(logPrefix, '%s is already in use', bind);
       process.exit(1);
       break;
     default:
@@ -87,5 +89,5 @@ function onListening() {
   const bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  console.log('Listening on ' + bind);
+  log.notice(logPrefix, 'Listening on %s', bind);
 }

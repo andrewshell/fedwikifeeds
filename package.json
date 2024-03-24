@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/andrewshell/fedwikifeeds#readme",
   "dependencies": {
-    "@andrewshell/cacheism": "^1.0.0",
+    "@andrewshell/cacheism": "^2.0.0",
     "csv": "^6.0.5",
     "daverss": "^0.5.30",
     "dayjs": "^1.10.7",
@@ -32,8 +32,10 @@
     "http-errors": "~1.6.3",
     "md": "^0.6.0",
     "node-fetch": "^2.6.6",
+    "npmlog": "^7.0.1",
     "opml": "^0.4.11",
-    "sanitize-html": "^2.7.2"
+    "sanitize-html": "^2.7.2",
+    "wildcard-match": "^5.1.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"

@@ -1,0 +1,5 @@
+<ul class="no-bullets">
+{{#each domains}}
+    <li><span class="{{#if this.active}}active{{else}}inactive{{/if}}">&#9654;</span> {{ this.text }}</li>
+{{/each}}
+</ul>
