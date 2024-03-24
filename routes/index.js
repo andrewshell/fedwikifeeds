@@ -4,8 +4,7 @@ const router = express.Router();
 const fedwikiHelper = require('../lib/fedwiki-helper');
 const feedHelper = require('../lib/feed-helper');
 const csv = require('csv/sync');
-const dayjs = require('dayjs');
-dayjs.extend(require('dayjs/plugin/utc'))
+const dayjs = require('../lib/day.js');
 
 const Cacheism = require('@andrewshell/cacheism');
 const cache = new Cacheism(Cacheism.store.filesystem(config));

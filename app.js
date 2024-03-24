@@ -5,9 +5,11 @@ const feedHelper = require('./lib/feed-helper');
 const everyMinute = require('./lib/every-minute');
 const express = require('express');
 const indexRouter = require('./routes/index');
+const debugRouter = require('./routes/debug');
 const path = require('path');
-const dayjs = require('dayjs');
-dayjs.extend(require('dayjs/plugin/utc'))
+const dayjs = require('./lib/day');
+const log = require('./lib/log');
+const logPrefix = 'app           ';
 
 const Cacheism = require('@andrewshell/cacheism');
 const cache = new Cacheism(Cacheism.store.filesystem(config));
@@ -17,6 +19,7 @@ const app = express();
 // view engine setup
 const hbs  = require('hbs');
 hbs.registerHelper('raw', function (options) { return options.fn(this); });
+hbs.registerHelper('json', function (options) { return JSON.stringify(options, null, 2) });
 
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
@@ -37,7 +40,7 @@ app.use(function(req, res, next) {
     } else if (match[1] === req.path && match[0] !== req.headers.host) {
       return res.redirect(301, `${scheme}${match[0]}/`);
     } else if ('/allfeeds.opml' == req.path) {
-      console.error(`Deprecated path: ${req.path}`);
+      log.error(logPrefix, 'Deprecated path: %s', req.path);
       return res.redirect(301, `${scheme}${req.headers.host}/river.opml`);
     }
   }
@@ -45,6 +48,7 @@ app.use(function(req, res, next) {
 });
 
 app.use('/', indexRouter);
+app.use('/debug', debugRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -78,7 +82,7 @@ const twoWeeksAgo = dayjs().subtract(2, 'week');
 everyMinute(async (expectedCycleTime) => {
   let domain, homepage, feed, roster;
 
-  console.log('everyMinute: ' + new Date(expectedCycleTime));
+  log.info(logPrefix, 'everyMinute: %s', new Date(expectedCycleTime));
 
   // Daily
   if (expectedCycleTime > lastDay + 86400000) {
