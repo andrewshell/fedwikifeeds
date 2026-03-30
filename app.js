@@ -77,7 +77,6 @@ function arrayChunks(items, num) {
 }
 
 let lastDay = 0, peerDomains = [], inactiveFeedChunks = [], watchedRosters = [];
-const twoWeeksAgo = dayjs().subtract(2, 'week');
 
 everyMinute(async (expectedCycleTime) => {
   let domain, homepage, feed, roster;
@@ -93,7 +92,7 @@ everyMinute(async (expectedCycleTime) => {
     peerDomains = await fedwikiHelper.fetchAllPeerDomains();
   }
 
-  domain = peerDomains.shift().toLowerCase();
+  domain = peerDomains.length > 0 ? peerDomains.shift().toLowerCase() : null;
   if (null != domain) {
     await feedHelper.fetchPeersOpml(domain, Cacheism.Status.cacheOnFail);
   }
@@ -104,6 +103,7 @@ everyMinute(async (expectedCycleTime) => {
   }
 
   if (0 === watchedRosters.length) {
+    const twoWeeksAgo = dayjs().subtract(2, 'week');
     watchedRosters = Object.values((await fedwikiHelper.fetchAllRosters()).data).filter((roster) => {
       return dayjs(roster.lastRequest).isAfter(twoWeeksAgo, 'day');
     });
@@ -113,7 +113,7 @@ everyMinute(async (expectedCycleTime) => {
     await feedHelper.fetchRosterOpml(roster.domain, roster.page, Cacheism.Status.cacheOnFail);
   }
 
-  allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data)
+  const allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data)
     .filter(filter => filter.active || false)
     .concat(inactiveFeedChunks.shift());
 
