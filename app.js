@@ -11,7 +11,7 @@ const dayjs = require('./lib/day');
 const log = require('./lib/log');
 const logPrefix = 'app           ';
 
-const Cacheism = require('@andrewshell/cacheism');
+const { Cacheism } = require('@andrewshell/cacheism');
 const cache = new Cacheism(Cacheism.store.filesystem(config));
 
 const app = express();

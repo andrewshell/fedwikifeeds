@@ -9,7 +9,7 @@ const dayjs = require('../lib/day.js');
 const log = require('../lib/log');
 const logPrefix = 'routes/index ';
 
-const Cacheism = require('@andrewshell/cacheism');
+const { Cacheism } = require('@andrewshell/cacheism');
 const cache = new Cacheism(Cacheism.store.filesystem(config));
 
 const SAFE_CALLBACK_RE = /^[a-zA-Z_$][\w$.]*$/;
