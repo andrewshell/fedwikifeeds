@@ -86,6 +86,7 @@ everyMinute(async (expectedCycleTime) => {
   // Daily
   if (expectedCycleTime > lastDay + 86400000) {
     await fedwikiHelper.mergeSearchRoster();
+    lastDay = expectedCycleTime;
   }
 
   if (0 === peerDomains.length) {
@@ -113,9 +114,10 @@ everyMinute(async (expectedCycleTime) => {
     await feedHelper.fetchRosterOpml(roster.domain, roster.page, Cacheism.Status.cacheOnFail);
   }
 
+  const inactiveChunk = inactiveFeedChunks.shift();
   const allFeeds = Object.values((await fedwikiHelper.fetchAllFeeds()).data)
     .filter(filter => filter.active || false)
-    .concat(inactiveFeedChunks.shift());
+    .concat(inactiveChunk || []);
 
   for (const feed of allFeeds) {
     await feedHelper.fetchSiteRss(feed.text, Cacheism.Status.cacheOnFail);

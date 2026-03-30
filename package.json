@@ -27,8 +27,8 @@
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "etag": "^1.8.1",
-    "express": "~4.16.1",
-    "hbs": "~4.0.4",
+    "express": "~4.22.0",
+    "hbs": "^4.2.0",
     "http-errors": "~1.6.3",
     "md": "^0.6.0",
     "node-fetch": "^2.6.6",
@@ -38,5 +38,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
+  },
+  "overrides": {
+    "handlebars": "4.7.9"
   }
 }
