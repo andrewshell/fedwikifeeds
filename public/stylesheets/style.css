@@ -24,20 +24,3 @@ ul.no-bullets {
 .inactive {
   color: orange;
 }
-
-.media-body.description {
-  max-height: 14em;
-  overflow: hidden;
-  line-height: 1.4;
-}
-
-.media-body.description h1,
-.media-body.description h2,
-.media-body.description h3,
-.media-body.description h4,
-.media-body.description h5,
-.media-body.description h6 {
-  font-size: inherit;
-  font-weight: bold;
-  margin: 0;
-}
