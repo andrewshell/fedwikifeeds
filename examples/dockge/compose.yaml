@@ -1,0 +1,51 @@
+# fedwikifeeds — example stack for Dockge (https://github.com/louislam/dockge)
+#
+# Usage:
+#   1. In Dockge, create a new stack (e.g. "fedwikifeeds") and paste this file.
+#   2. Edit DOC_ROOT below to your public URL.
+#   3. Deploy. Feed/roster cache persists in the named volume `fedwikifeeds-data`.
+#
+# Pulls the published image from the GitHub Container Registry rather than
+# building, so this stack deploys without a checkout of the repo. To pin a
+# release, replace `:latest` with a version tag (e.g.
+# ghcr.io/andrewshell/fedwikifeeds:0.8.0).
+
+services:
+  fedwikifeeds:
+    image: ghcr.io/andrewshell/fedwikifeeds:latest
+    container_name: fedwikifeeds
+    restart: unless-stopped
+    ports:
+      # host:container — change the host side if 3000 is taken; usually you'd
+      # also front this with a reverse proxy terminating HTTPS.
+      - "3000:3000"
+    environment:
+      # Public URL this instance advertises in generated feeds/pages. Point it
+      # at your HTTPS endpoint.
+      DOC_ROOT: https://fedwikiriver.com
+      # Optional: change the listen port (then update the ports mapping above).
+      # PORT: "3000"
+      # Optional: cap how many items appear in the combined river feed.
+      # RIVER_LIMIT: "300"
+    volumes:
+      # Persist the feed/roster cache across restarts/redeploys.
+      - fedwikifeeds-data:/app/data
+      # blacklist.json and cname.json are curated by hand and live at the app
+      # root rather than under DATA_DIR — bind-mount them individually if you
+      # want edits to survive redeploys instead of falling back to the empty
+      # defaults baked into the image:
+      # - ./blacklist.json:/app/blacklist.json
+      # - ./cname.json:/app/cname.json
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get('http://localhost:3000/',r=>process.exit(r.statusCode<500?0:1)).on('error',()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  fedwikifeeds-data:

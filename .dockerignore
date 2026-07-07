@@ -1,0 +1,14 @@
+.git
+.github
+.husky
+node_modules
+coverage
+test
+data
+data-*
+blacklist.json
+cname.json
+.env
+.env.test
+*.log
+.DS_Store
