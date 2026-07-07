@@ -9,9 +9,7 @@ lerna-debug.log*
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-# Runtime data
-blacklist.json
-cname.json
+# Runtime data (includes blacklist.json and cname.json)
 data
 data-*
 pids

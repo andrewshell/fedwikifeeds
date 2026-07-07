@@ -44,27 +44,16 @@ npm run docker:dry-run
 
 ### Running the published image
 
-fedwikifeeds keeps its feed/roster cache on disk under `/app/data`, so mount a
-volume there to persist it across restarts. Set `DOC_ROOT` to the
-externally-reachable URL so generated feeds/pages link back correctly.
+fedwikifeeds keeps its feed/roster cache, `blacklist.json`, and `cname.json`
+on disk under `/app/data`, so mount a volume there to persist them across
+restarts. Set `DOC_ROOT` to the externally-reachable URL so generated
+feeds/pages link back correctly. See the root [README.md](../README.md) for
+the format of `blacklist.json`/`cname.json`.
 
 ```bash
 docker run -d -p 3000:3000 \
   -e DOC_ROOT=https://fedwikiriver.com \
   -v fedwikifeeds-data:/app/data \
-  ghcr.io/andrewshell/fedwikifeeds:latest
-```
-
-`blacklist.json` and `cname.json` are curated by hand and live at the app
-root rather than under the data volume — bind-mount them individually if you
-want edits to survive redeploys:
-
-```bash
-docker run -d -p 3000:3000 \
-  -e DOC_ROOT=https://fedwikiriver.com \
-  -v fedwikifeeds-data:/app/data \
-  -v $(pwd)/blacklist.json:/app/blacklist.json \
-  -v $(pwd)/cname.json:/app/cname.json \
   ghcr.io/andrewshell/fedwikifeeds:latest
 ```
 

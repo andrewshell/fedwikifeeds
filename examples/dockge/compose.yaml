@@ -3,7 +3,8 @@
 # Usage:
 #   1. In Dockge, create a new stack (e.g. "fedwikifeeds") and paste this file.
 #   2. Edit DOC_ROOT below to your public URL.
-#   3. Deploy. Feed/roster cache persists in the named volume `fedwikifeeds-data`.
+#   3. Deploy. Feed/roster cache and hand-curated blacklist.json/cname.json
+#      persist in the named volume `fedwikifeeds-data`.
 #
 # Pulls the published image from the GitHub Container Registry rather than
 # building, so this stack deploys without a checkout of the repo. To pin a
@@ -28,14 +29,9 @@ services:
       # Optional: cap how many items appear in the combined river feed.
       # RIVER_LIMIT: "300"
     volumes:
-      # Persist the feed/roster cache across restarts/redeploys.
+      # Persist the feed/roster cache plus blacklist.json/cname.json across
+      # restarts/redeploys — see README.md for the format of those two files.
       - fedwikifeeds-data:/app/data
-      # blacklist.json and cname.json are curated by hand and live at the app
-      # root rather than under DATA_DIR — bind-mount them individually if you
-      # want edits to survive redeploys instead of falling back to the empty
-      # defaults baked into the image:
-      # - ./blacklist.json:/app/blacklist.json
-      # - ./cname.json:/app/cname.json
     healthcheck:
       test:
         - CMD

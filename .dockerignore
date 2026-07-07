@@ -6,8 +6,6 @@ coverage
 test
 data
 data-*
-blacklist.json
-cname.json
 .env
 .env.test
 *.log
