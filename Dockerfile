@@ -1,11 +1,11 @@
-FROM node:20 AS dependencies
+FROM node:24 AS dependencies
 
 WORKDIR /app
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-FROM node:20 AS runtime
+FROM node:24 AS runtime
 
 WORKDIR /app
 

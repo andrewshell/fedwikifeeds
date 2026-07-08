@@ -26,6 +26,9 @@
     "url": "https://github.com/andrewshell/fedwikifeeds/issues"
   },
   "homepage": "https://github.com/andrewshell/fedwikifeeds#readme",
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "@andrewshell/cacheism": "^3.0.1",
     "csv": "^6.0.5",
