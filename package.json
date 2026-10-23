@@ -36,8 +36,8 @@
     "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "etag": "^1.8.1",
-    "express": "~4.22.0",
-    "hbs": "^4.2.0",
+    "express": "~4.22.3",
+    "hbs": "^4.4.0",
     "http-errors": "~1.6.3",
     "md": "^0.6.0",
     "node-fetch": "^2.6.6",
@@ -46,13 +46,15 @@
     "sanitize-html": "^2.7.2"
   },
   "devDependencies": {
+    "@babel/plugin-transform-export-namespace-from": "^7.29.7",
+    "@babel/plugin-transform-modules-commonjs": "^7.29.7",
     "@commitlint/cli": "^17.8.1",
     "@commitlint/config-conventional": "^17.8.1",
     "husky": "^8.0.3",
     "jest": "^29.7.0",
-    "nodemon": "^2.0.15"
+    "nodemon": "^3.1.14"
   },
   "overrides": {
-    "handlebars": "4.7.9"
+    "handlebars": "4.7.10"
   }
 }
